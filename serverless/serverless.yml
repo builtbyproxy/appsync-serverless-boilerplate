@@ -1,4 +1,4 @@
-service: graphqlConf # NOTE: update this with your service name
+service: graphqlConf
 
 provider:
   name: aws
