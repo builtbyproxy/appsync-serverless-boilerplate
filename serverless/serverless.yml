@@ -2,6 +2,7 @@ service: graphqlConf # NOTE: update this with your service name
 
 provider:
   name: aws
+  region: ap-southeast-2
   runtime: nodejs8.10
 
 plugins:
@@ -45,7 +46,7 @@ custom:
   appSync:
     name: GraphqlConf-Boilerplate
     apiId: ${self:custom.config.APPSYNC_API_ID} # only required for update-appsync
-    authenticationType: AWS_IAM # API_KEY is also supported
+    # authenticationType: AWS_IAM # API_KEY is also supported
     # userPoolConfig:
     #   awsRegion: ${self:custom.config.APPSYNC_USER_POOL_ID} # required # region
     #   defaultAction: ALLOW
@@ -53,11 +54,29 @@ custom:
     mappingTemplates:
       - dataSource: Lambda
         type: Mutation
-        field: archiveRequest
-        request: "archiveRequest-request.txt"
-        response: "archiveRequest-response.txt"
+        field: createUser
+        request: "mutation-request.txt"
+        response: "mutation-response.txt"
+      - dataSource: Lambda
+        type: Mutation
+        field: updateUser
+        request: "mutation-request.txt"
+        response: "mutation-response.txt"
       - dataSource: Lambda
         type: Query
-        field: getNotificationsForUser
-        request: "getNotificationsForUser-request.txt"
-        response: "getNotificationsForUser-response.txt"
+        field: getUser
+        request: "query-request.txt"
+        response: "query-response.txt"
+    
+    # schema: # defaults schema.graphql
+    serviceRole: "AppSyncServiceRole"
+    dataSources:
+      - type: AWS_LAMBDA
+        name: Lambda
+        description: "Lambda DataSource"
+        config:
+          lambdaFunctionArn: "arn:aws:lambda:ap-southeast-2:${self:custom.config.APPSYNC_API_ID}:function:MBRC-AppSync-mbrc-graphql"
+          serviceRoleArn: "arn:aws:iam::${self:custom.config.APPSYNC_API_ID}:role/Lambda-${self:custom.appSync.serviceRole}"
+          functionName: graphql
+  appsync-offline:
+    port: 60004

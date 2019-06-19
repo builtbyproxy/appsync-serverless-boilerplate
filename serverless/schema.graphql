@@ -1,0 +1,41 @@
+type Mutation {
+	# Create a user
+	createUser(
+	    firstName: String!
+		lastName: String!
+		email: String!
+		mobileNumber: String!
+	): User!
+
+	# Update a user
+	updateUser(
+		firstName: String,
+		lastName: String,
+		email: String,
+		mobileNumber: String
+	): User!
+
+	# archiveRequest ( requestId: String! ): String
+}
+
+type Query {
+	getUser: User
+}
+
+type Subscription {
+	userChange (userId: String): User
+	# @aws_subscribe(mutations: ["createRequest"])
+}
+
+type User {
+	firstName: String!
+	lastName: String!
+	email: String!
+	mobileNumber: String!
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+	subscription: Subscription
+}
