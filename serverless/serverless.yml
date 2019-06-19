@@ -1,0 +1,63 @@
+service: graphqlConf # NOTE: update this with your service name
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+plugins:
+  - serverless-appsync-plugin
+  - serverless-appsync-offline
+  - serverless-offline
+
+functions:
+  graphql:
+    handler: functions/handler.graphqlHandler
+
+resources:
+  Resources:
+    AppSyncServiceRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        RoleName: "Lambda-AppSyncServiceRole"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "appsync.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        Policies:
+          - PolicyName: "Lambda-AppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "lambda:invokeFunction"
+                  Resource:
+                    - "arn:aws:lambda:{your-region}:*:function:{your-deployed-graphql-function-above}"
+                    - "arn:aws:lambda:{your-region}:*:function:{your-deployed-graphql-function-above}:*"
+
+custom:
+  config: ${file(.secrets.yml)}
+  appSync:
+    name: GraphqlConf-Boilerplate
+    apiId: ${self:custom.config.APPSYNC_API_ID} # only required for update-appsync
+    authenticationType: AWS_IAM # API_KEY is also supported
+    # userPoolConfig:
+    #   awsRegion: ${self:custom.config.APPSYNC_USER_POOL_ID} # required # region
+    #   defaultAction: ALLOW
+    #   userPoolId: ${self:custom.config.APPSYNC_USER_POOL_ID} # replace this with your Cognito User Pool Id
+    mappingTemplates:
+      - dataSource: Lambda
+        type: Mutation
+        field: archiveRequest
+        request: "archiveRequest-request.txt"
+        response: "archiveRequest-response.txt"
+      - dataSource: Lambda
+        type: Query
+        field: getNotificationsForUser
+        request: "getNotificationsForUser-request.txt"
+        response: "getNotificationsForUser-response.txt"
