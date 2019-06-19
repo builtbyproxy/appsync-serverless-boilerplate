@@ -14,8 +14,6 @@ type Mutation {
 		email: String,
 		mobileNumber: String
 	): User!
-
-	# archiveRequest ( requestId: String! ): String
 }
 
 type Query {
@@ -24,7 +22,6 @@ type Query {
 
 type Subscription {
 	userChange (userId: String): User
-	# @aws_subscribe(mutations: ["createRequest"])
 }
 
 type User {
