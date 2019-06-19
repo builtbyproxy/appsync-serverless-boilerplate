@@ -1,0 +1,13 @@
+# package directories
+node_modules
+jspm_packages
+
+.npmrc
+
+# Serverless directories
+.serverless
+
+.secrets.yml
+
+# Webpack directories
+.webpack
